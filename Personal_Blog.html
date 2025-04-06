@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блог Даниила Магарченкова</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6d28d9;
+            --secondary: #4f46e5;
+            --accent: #ec4899;
+            --background: #f3f4f6;
+            --text: #1f2937;
+            --newbackground: white;
+            --murakamibackground: #cccccc;
+            --gametextcolor: rgba(128, 128, 128, 0.700);
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-dark {
+            --background: #1f2937;
+            --text: #ffffffd8;
+            --accent: #832d58;
+            --secondary: #2d26ad;
+            --newbackground: #562c7e;
+            --murakamibackground: #55455e;
+        }
+        
+        .section-card {
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            background: var(--newbackground);
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .game-card, .music-card, .social-card {
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .game-card:hover, .music-card:hover, .social-card:hover {
+            transform: scale(1.03);
+            --gametextcolor: #e0e0e0ee;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            z-index: -1;
+            border-radius: 0.85rem;
+            animation: rotate 6s linear infinite;
+        }
+
+        .game-text{
+            color: var(--gametextcolor);
+        }
+        
+        @keyframes rotate {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+        
+        .sticky {
+            background: var(--newbackground);
+        }
+
+        .murakami {
+            background: var(--murakamibackground);
+        }
+
+        .nav-item {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover::after, .nav-item.active::after {
+            width: 80%;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .music-player {
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-switcher {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(var(--background), 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+    <div class="theme-switcher" id="themeSwitcher">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white py-16 px-4 md:px-0">
+        <div class="container mx-auto text-center">
+            <div class="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white">
+                <img id="profileImage" src="https://avatars.mds.yandex.net/i?id=2329a722c7f0416a60b8c04c6d02839d_l-3922615-images-thumbs&n=13" alt="Даниил Магарченков" class="w-full h-full object-cover">
+            </div>
+            <h1 class="text-4xl font-bold mb-2">Даниил Магарченков</h1>
+            <p class="text-xl mb-4">Программист, спортсмен, геймер</p>
+            <div class="flex justify-center space-x-4">
+                <a href="https://github.com/CraZzzyXD" target="_blank" class="hover:text-gray-300">
+                    <i class="fab fa-github text-2xl"></i>
+                </a>
+                <a href="https://t.me/CraZzzyXD" target="_blank" class="hover:text-gray-300">
+                    <i class="fab fa-telegram text-2xl"></i>
+                </a>
+                <a href="https://www.instagram.com/i_ate_my_grandfather69/" target="_blank" class="hover:text-gray-300">
+                    <i class="fab fa-instagram text-2xl"></i>
+                </a>
+                <a href="mailto:bam4854@gmail.com" class="hover:text-gray-300">
+                    <i class="fas fa-envelope text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 shadow-md z-50 py-3 px-4 md:px-0">
+        <div class="container mx-auto flex justify-center flex-wrap">
+            <div class="nav-item active" data-target="about">Обо мне</div>
+            <div class="nav-item" data-target="programming">Программирование</div>
+            <div class="nav-item" data-target="sports">Спорт</div>
+            <div class="nav-item" data-target="books">Книги</div>
+            <div class="nav-item" data-target="games">Игры</div>
+            <div class="nav-item" data-target="music">Музыка</div>
+            <div class="nav-item" data-target="social">Соцсети</div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 md:px-6 py-10">
+        <!-- About Section -->
+        <section id="about" class="section mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Обо мне</h2>
+            <div class="section-card p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-lg mb-4">Привет! Я Даниил, мне 21 год, и я живу в прекрасном городе Смоленске. В данный момент я учусь в МЭИ и работаю в компании EdiWeb.</p>
+                        <p class="text-lg mb-4">Мои страсти включают программирование, спорт и чтение книг, особенно произведений Харуки Мураками. В свободное время люблю играть в видеоигры и слушать музыку.</p>
+                        <button class="edit-btn bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg mt-2">
+                            <i class="fas fa-edit mr-2"></i>Редактировать
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Основная информация</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-calendar-alt text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">День рождения</p>
+                                    <p class="font-medium">22 октября 2003 года</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-university text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Образование</p>
+                                    <p class="font-medium">Московский энергетический институт (МЭИ)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-map-marker-alt text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Город</p>
+                                    <p class="font-medium">Смоленск</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-briefcase text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Работа</p>
+                                    <p class="font-medium">EdiWeb</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-envelope text-indigo-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Email</p>
+                                    <p class="font-medium">bam4854@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Programming Section -->
+        <section id="programming" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Программирование</h2>
+            <div class="section-card p-6">
+                <h3 class="text-xl font-semibold mb-4">Мои технологии и инструменты</h3>
+                <p class="mb-6">Программирование - это моя страсть. Я постоянно изучаю новые технологии и стремлюсь совершенствовать свои навыки разработки.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-html5 text-orange-500 text-4xl mb-2"></i>
+                        <p>HTML5</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-css3-alt text-blue-500 text-4xl mb-2"></i>
+                        <p>CSS3</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-js-square text-yellow-500 text-4xl mb-2"></i>
+                        <p>JavaScript</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-react text-blue-400 text-4xl mb-2"></i>
+                        <p>React</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-node-js text-green-600 text-4xl mb-2"></i>
+                        <p>Node.js</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-python text-blue-600 text-4xl mb-2"></i>
+                        <p>Python</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center">
+                        <i class="fab fa-github text-gray-800 text-4xl mb-2"></i>
+                        <p>Git/GitHub</p>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center add-tech">
+                        <i class="fas fa-plus text-indigo-500 text-4xl mb-2"></i>
+                        <p>Добавить</p>
+                    </div>
+                </div>
+                
+                <h3 class="text-xl font-semibold mb-4">Мои проекты</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="h-48 bg-gray-300 flex items-center justify-center">
+                            <i class="fas fa-code text-4xl text-gray-500"></i>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg mb-2">Личный блог</h4>
+                            <p class=" mb-3">Интерактивный блог с персонализированным контентом и возможностью редактирования.</p>
+                            <div class="flex space-x-2">
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">HTML</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">CSS</span>
+                                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">JavaScript</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-xl overflow-hidden add-project">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-plus text-3xl text-gray-400"></i>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg">Добавить проект</h4>
+                            <p class="text-gray-500">Нажмите, чтобы добавить новый проект</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sports Section -->
+        <section id="sports" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Спорт</h2>
+            <div class="section-card p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Мой спортивный путь</h3>
+                        <p class="mb-4">Спорт всегда был важной частью моей жизни. Ранее я занимался тхэквондо, а сейчас регулярно тренируюсь в фитнес-клубе Orange Club.</p>
+                        <p>Спорт помогает мне поддерживать не только физическую форму, но и дисциплину, которая необходима в программировании и повседневной жизни.</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2">Orange Club</h4>
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-map-marker-alt text-indigo-600 mr-2"></i>
+                                <span>Смоленск</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt text-indigo-600 mr-2"></i>
+                                <span>С 2025 года</span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2">Тхэквондо</h4>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar-alt text-indigo-600 mr-2"></i>
+                                <span>Предыдущий опыт</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="h-80 bg-gray-200 rounded-lg overflow-hidden">
+                            <img src="https://sun9-34.userapi.com/impf/7LgMRJ_zDJCLafDVixqW5f1DlZeYZP51wjQgGw/QsJW_75gydk.jpg?size=1920x768&quality=95&crop=41,0,1038,414&sign=7d44653872d18522da94f70f52feef64&type=cover_group" alt="Спортивная деятельность" class="w-full h-full object-cover">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div class="h-24 bg-gray-200 rounded-md overflow-hidden">
+                                <img src="https://steamuserimages-a.akamaihd.net/ugc/2017101576979430539/9427DB29038EFD6F34414F757850F939FC5C3E1B/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false" alt="" class="w-full h-full object-cover">
+                            </div>
+                            <div class="h-24 bg-gray-200 rounded-md overflow-hidden">
+                                <img src="https://avatars.yandex.net/get-music-content/8096180/b9224e0c.a.25124967-1/m1000x1000?webp=false" alt="" class="w-full h-full object-cover">
+                            </div>
+                            <div class="h-24 bg-gray-200 rounded-md overflow-hidden add-sport-photo">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="fas fa-plus text-gray-400 text-2xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Books Section -->
+        <section id="books" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Книги</h2>
+            <div class="section-card p-6">
+                <h3 class="text-xl font-semibold mb-4">Любимые произведения</h3>
+                <p class="mb-6">Я большой поклонник произведений Харуки Мураками. Его уникальный стиль, смешивающий реальность и сюрреализм, находит отклик в моём мировосприятии.</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+                    <div class="book-card text-center">
+                        <div class="h-64 mb-3 rounded-md overflow-hidden shadow-md">
+                            <img src="https://cdn1.ozone.ru/s3/multimedia-1-i/6934758102.jpg" alt="Норвежский лес" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-semibold">Норвежский лес</h4>
+                        <p class="text-sm text-gray-600">Харуки Мураками</p>
+                    </div>
+                    <div class="book-card text-center">
+                        <div class="h-64 mb-3 rounded-md overflow-hidden shadow-md">
+                            <img src="https://catalog.detmir.st/media/UGY_gyTqdsyAotEw_-vqfoCICou-I9PlFWFUfLJMc18=" alt="Кафка на пляже" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-semibold">Кафка на пляже</h4>
+                        <p class="text-sm text-gray-600">Харуки Мураками</p>
+                    </div>
+                    <div class="book-card text-center">
+                        <div class="h-64 mb-3 rounded-md overflow-hidden shadow-md">
+                            <img src="https://os.colta.ru/m/photo/2011/06/21/1q84_b_1.jpg" alt="1Q84" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-semibold">1Q84</h4>
+                        <p class="text-sm text-gray-600">Харуки Мураками</p>
+                    </div>
+                    <div class="book-card text-center add-book">
+                        <div class="h-64 mb-3 rounded-md overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
+                            <i class="fas fa-plus text-gray-400 text-4xl"></i>
+                        </div>
+                        <h4 class="font-semibold">Добавить книгу</h4>
+                    </div>
+                </div>
+                
+                <div class="mt-10">
+                    <h3 class="text-xl font-semibold mb-4">Почему Мураками?</h3>
+                    <div class="murakami p-6 rounded-lg">
+                        <p class="italic">
+                            "Произведения Мураками - это возможность заглянуть в параллельные миры, где обыденное становится магическим, а необъяснимое - обыденным. Его книги заставляют задуматься о том, что реальность намного сложнее и интереснее, чем кажется на первый взгляд."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Games Section -->
+        <section id="games" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Игры</h2>
+            <div class="section-card p-6">
+                <p class="mb-8">В свободное время я люблю играть в различные компьютерные игры. Ниже представлен список моих фаворитов.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="game-card bg-white shadow-md">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=aacb9ca71f2e25c235a716087aa413a0_l-5235576-images-thumbs&n=13" alt="Dota 2" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Dota 2</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <i class="fab fa-steam text-gray-700 mr-2"></i>
+                                <span class="game-text text-sm">Steam</span>
+                            </div>
+                            <p class="game-text text-sm mb-3">MOBA игра от Valve с глубокой стратегией и огромным сообществом игроков.</p>
+                            <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Подробнее</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card bg-white shadow-md">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=ae14a83e03afeccb7f5222436faa8c21_l-5008667-images-thumbs&n=13" alt="Rocket League" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Rocket League</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <i class="fab fa-steam text-gray-700 mr-2"></i>
+                                <span class="game-text text-sm">Steam</span>
+                            </div>
+                            <p class="game-text text-sm mb-3">Футбол на машинах - уникальная игра, сочетающая спорт и аркадную физику.</p>
+                            <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Подробнее</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card bg-white shadow-md">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=e43f8bd84189bcb8cb1cb13f74c09228_l-4302892-images-thumbs&n=13" alt="Dead by Daylight" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Dead by Daylight</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <i class="fab fa-steam text-gray-700 mr-2"></i>
+                                <span class="game-text text-sm">Steam</span>
+                            </div>
+                            <p class="game-text text-sm mb-3">Асимметричный хоррор, где один игрок становится маньяком, а остальные пытаются выжить.</p>
+                            <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Подробнее</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card bg-white shadow-md">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=13f2c35d47f465e4238dd71cc7dd2512_l-10698057-images-thumbs&n=13" alt="CS 2" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">CS 2</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <i class="fab fa-steam text-gray-700 mr-2"></i>
+                                <span class="game-text text-sm">Steam</span>
+                            </div>
+                            <p class="game-text text-sm mb-3">Легендарный шутер от Valve, продолжение культовой серии Counter-Strike.</p>
+                            <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Подробнее</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card bg-white shadow-md">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=91cf5e887d518c77af0cc6bfda14a1e7_l-10783551-images-thumbs&n=13" alt="Valorant" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Valorant</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-gamepad text-gray-700 mr-2"></i>
+                                <span class="game-text text-sm">Riot Games</span>
+                            </div>
+                            <p class="game-text text-sm mb-3">Тактический шутер от Riot Games с уникальными персонажами и способностями.</p>
+                            <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm">Подробнее</button>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card bg-white shadow-md add-game">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-plus text-gray-400 text-4xl"></i>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold">Добавить игру</h3>
+                            <p class="text-sm text-gray-600">Нажмите, чтобы добавить новую игру в коллекцию</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Music Section -->
+        <section id="music" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Музыка</h2>
+            <div class="section-card p-6">
+                <p class="mb-8">Музыка - важная часть моей жизни. Ниже представлены мои любимые исполнители с возможностью прослушать некоторые треки.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="music-card bg-white shadow-md overflow-hidden">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=2486c3c1e9e8701c3ed847caeffed061-4144443-images-thumbs&n=13" alt="Серёга пират" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Серёга пират</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-4">Российский хип-хоп исполнитель с уникальным стилем и запоминающимися треками.</p>
+                            <div class="music-player">
+                                <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1025902009&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="music-card bg-white shadow-md overflow-hidden">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/i?id=8b7ad80cda95522ba59c7bee8ddcd647_l-12422060-images-thumbs&n=13" alt="Lida" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Lida</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-4">Современный исполнитель, объединяющий различные жанры и экспериментирующий со звучанием.</p>
+                            <div class="music-player">
+                                <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1736194716&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="music-card bg-white shadow-md overflow-hidden">
+                        <div class="h-48 bg-gray-300 relative">
+                            <img src="https://avatars.mds.yandex.net/get-afishanew/4768735/f831a1b206c12014bee14ff99beae97b/960x690_noncrop" alt="Gone Fludd" class="w-full h-full object-cover">
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                <h3 class="text-white font-bold">Gone Fludd</h3>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-4">Один из самых ярких представителей новой волны российского хип-хопа с уникальным стилем и подачей.</p>
+                            <div class="music-player">
+                                <iframe width="100%" height="166" scrolling="no"  frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/2059417332&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="music-card bg-white shadow-md overflow-hidden add-music">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-plus text-gray-400 text-4xl"></i>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold">Добавить исполнителя</h3>
+                            <p class="text-sm text-gray-600 mb-4">Нажмите, чтобы добавить нового исполнителя в коллекцию</p>
+                            <div class="flex justify-center">
+                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+                                    <i class="fas fa-music mr-2"></i>Добавить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold mb-6">Плейлист на каждый день</h3>
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZEVXcJZyENOWUFo7" width="100%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Section -->
+        <section id="social" class="section mb-16 fade-in" style="display:none;">
+            <h2 class="text-3xl font-bold mb-8 gradient-text inline-block">Социальные сети</h2>
+            <div class="section-card p-6">
+                <p class="mb-8">Я активно присутствую в различных социальных сетях и игровых платформах. Присоединяйтесь ко мне!</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="social-card bg-white shadow-md overflow-hidden">
+                        <div class="bg-purple-600 text-white p-4 flex items-center">
+                            <i class="fab fa-twitch text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl">Twitch</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Иногда провожу стримы по любимым играм, присоединяйтесь!</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">@crazzzy_xd</span>
+                                <a href="https://www.twitch.tv/crazzzy_xd" target="_blank" class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">Перейти</a>
+                            </div>
+                            <div class="mt-4 bg-gray-100 p-3 rounded-lg text-sm">
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-users mr-2"></i>
+                                    <span>Подписчики: 150+</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-card bg-white shadow-md overflow-hidden">
+                        <div class="bg-gray-800 text-white p-4 flex items-center">
+                            <i class="fab fa-steam text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl">Steam</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Моя коллекция игр и профиль в Steam.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">@crazy4666</span>
+                                <a href="https://steamcommunity.com/id/crazy4666/" target="_blank" class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">Перейти</a>
+                            </div>
+                            <div class="mt-4 bg-gray-100 p-3 rounded-lg text-sm">
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-gamepad mr-2"></i>
+                                    <span>Игры: 50+</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-card bg-white shadow-md overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-600 to-pink-500 text-white p-4 flex items-center">
+                            <i class="fab fa-instagram text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl">Instagram</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Фотографии из моей жизни и интересные моменты.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">@i_ate_my_grandfather69</span>
+                                <a href="https://www.instagram.com/i_ate_my_grandfather69/" target="_blank" class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm">Перейти</a>
+                            </div>
+                            <div class="mt-4 grid grid-cols-3 gap-1">
+                                <div class="h-16 bg-gray-200 rounded-sm overflow-hidden">
+                                    <img src="https://via.placeholder.com/150?text=1" alt="" class="w-full h-full object-cover">
+                                </div>
+                                <div class="h-16 bg-gray-200 rounded-sm overflow-hidden">
+                                    <img src="https://via.placeholder.com/150?text=2" alt="" class="w-full h-full object-cover">
+                                </div>
+                                <div class="h-16 bg-gray-200 rounded-sm overflow-hidden">
+                                    <img src="https://via.placeholder.com/150?text=3" alt="" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-card bg-white shadow-md overflow-hidden">
+                        <div class="bg-blue-500 text-white p-4 flex items-center">
+                            <i class="fab fa-telegram text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl">Telegram</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Связаться со мной для общения или по рабочим вопросам.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">@CraZzzyXD</span>
+                                <a href="https://t.me/CraZzzyXD" target="_blank" class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">Написать</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-card bg-white shadow-md overflow-hidden">
+                        <div class="bg-gray-900 text-white p-4 flex items-center">
+                            <i class="fab fa-github text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl">GitHub</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Мои проекты, код и вклад в open-source.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-medium">@CraZzzyXD</span>
+                                <a href="https://github.com/CraZzzyXD" target="_blank" class="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm">Перейти</a>
+                            </div>
+                            <div class="mt-4 bg-gray-100 p-3 rounded-lg text-sm">
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-code-branch mr-2"></i>
+                                    <span>Репозитории: 10+</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-card bg-white shadow-md overflow-hidden add-social">
+                        <div class="bg-gray-200 p-4 flex items-center">
+                            <i class="fas fa-plus text-gray-500 text-3xl mr-3"></i>
+                            <h3 class="font-bold text-xl text-gray-600">Добавить профиль</h3>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-600 mb-3">Добавьте ссылку на другие социальные сети или платформы.</p>
+                            <div class="flex justify-center mt-4">
+                                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+                                    <i class="fas fa-plus mr-2"></i>Добавить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-8 px-4 md:px-0">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-2xl font-bold mb-2">Даниил Магарченков</h3>
+                    <p>Личный блог © 2023</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://github.com/CraZzzyXD" target="_blank" class="hover:text-gray-300">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="https://t.me/CraZzzyXD" target="_blank" class="hover:text-gray-300">
+                        <i class="fab fa-telegram text-2xl"></i>
+                    </a>
+                    <a href="https://www.instagram.com/i_ate_my_grandfather69/" target="_blank" class="hover:text-gray-300">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </a>
+                    <a href="mailto:bam4854@gmail.com" class="hover:text-gray-300">
+                        <i class="fas fa-envelope text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-indigo-600 text-center">
+                <p>Сделано с <i class="fas fa-heart text-pink-500"></i> и кодом</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme switching
+        const themeSwitcher = document.getElementById('themeSwitcher');
+        const body = document.body;
+        let isDarkMode = false;
+
+        themeSwitcher.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                body.classList.add('theme-dark');
+                themeSwitcher.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.classList.remove('theme-dark');
+                themeSwitcher.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.getAttribute('data-target');
+                
+                // Update active tab
+                navItems.forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                item.classList.add('active');
+                
+                // Show selected section
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                    if (section.id === target) {
+                        section.style.display = 'block';
+                        
+                        // Animation
+                        section.classList.remove('fade-in');
+                        void section.offsetWidth; // Trigger reflow
+                        section.classList.add('fade-in');
+                    }
+                });
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Edit functionality (placeholder)
+        const editBtns = document.querySelectorAll('.edit-btn');
+        
+        editBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('Функция редактирования будет доступна в следующем обновлении!');
+            });
+        });
+
+        // Add functionality (placeholder)
+        const addElements = document.querySelectorAll('.add-tech, .add-project, .add-sport-photo, .add-book, .add-game, .add-music, .add-social');
+        
+        addElements.forEach(elem => {
+            elem.addEventListener('click', () => {
+                alert('Функция добавления будет доступна в следующем обновлении!');
+            });
+        });
+
+        // Default section
+        document.querySelector('.nav-item[data-target="about"]').click();
+
+        // Add random colors to tech cards for visual interest
+        const colors = ['#EDE9FE', '#FCE7F3', '#DBEAFE', '#E0E7FF', '#FEF3C7', '#ECFDF5'];
+        const techCards = document.querySelectorAll('.bg-gray-100');
+        
+        techCards.forEach(card => {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            card.style.backgroundColor = randomColor;
+        });
+    </script>
+</body>
+</html>
